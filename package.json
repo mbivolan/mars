@@ -1,6 +1,6 @@
 {
     "name": "report_gen",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Report Generator for diferent data sources",
     "main": "main.js",
     "scripts": {
@@ -20,8 +20,8 @@
         "report",
         "generate"
     ],
-    "author": "TaEduard",
-    "license": "GPL-3.0",
+    "author": "Eduard Tamsa",
+    "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/sjultra/report_gen/issues"
     },
