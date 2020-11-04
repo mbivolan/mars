@@ -22,8 +22,7 @@ const PrismaCloudApi = require("./PrismaCloud");
 const cfgParser = require("./configParser.js");
 const DStore = require("./dataStore");
 const version = require("./package.json").version;
-const { LogWritter } = require("./LogWritter")
-const {InitAggregator,AddDataToAggregator,WriteDataFromAggregator} = require("./reports/report")
+const { InitAggregator, AddDataToAggregator, WriteDataFromAggregator } = require("./reports/report");
 program.option("-c, --config <src>", "Path to the config file");
 program.option("-o, --output <src>", "Path to the output folder");
 
@@ -36,28 +35,44 @@ const Stor = new DStore();
 
 console.log("Loading config ...");
 console.log(`${program.config}`, fs.existsSync(`${program.config}`));
-config = new cfgParser(program.config);
+cfg = new cfgParser(program.config);
 output = program.output
-const workbook = InitAggregator(config)
 console.log("Running:");
 
-if (config.Qualys) {
-    for (const [index, entry] of config.Qualys.entries()) {
-        QualysApi.init(entry.credentials, index, config, Stor, entry.requests, LogWritter)
+const runtimeReportOBJ = []
+
+
+if (cfg.Qualys) {
+    for (const [index, entry] of cfg.Qualys.entries()) {
+        const AggConf = InitAggregator(cfg)
+        QualysApi.init(entry.credentials, index, cfg, Stor, entry.requests, { AggConf, AddDataToAggregator, runtimeReportOBJ })
+        WriteDataFromAggregator(AggConf)
     }
 }
 
-if (config.GCP) {
-        for (const [index, entry] of config.GCP.entries()) {
-
-        GCPApi.init(entry.credentials, index, config, Stor, entry.requests, LogWritter)
+if (cfg.GCP) {
+    for (const [index, entry] of cfg.GCP.entries()) {
+        const AggConf = InitAggregator(cfg)
+        GCPApi.init(entry.credentials, index, cfg, Stor, entry.requests, { AggConf, AddDataToAggregator, runtimeReportOBJ })
+        WriteDataFromAggregator(AggConf)
     }
 }
 
-if (config.PrismaCloud) {
-        for (const [index, entry] of config.PrismaCloud.entries()) {
-        PrismaCloudApi.init(entry.credentials, index, config, Stor, entry.requests, {workbook, AddDataToAggregator});
-        }
+if (cfg.PrismaCloud) {
+    for (const [index, entry] of cfg.PrismaCloud.entries()) {
+        console.log("inits config")
+        PrismaCloudApi.init(entry.credentials, index, cfg, Stor, entry.requests, runtimeReportOBJ)
+    }
 }
 
-process.on('exit', ()=>{WriteDataFromAggregator(workbook,config)});
+process.on('unhandledRejection', (reason) => {
+    console.log('Reason: ' + reason);
+});
+
+process.on('exit', () => {
+    headerList = ['account id', 'name', 'apiURL', 'entries', 'reason']
+    const AggConf = InitAggregator(cfg)
+    data = { data: runtimeReportOBJ, header: { header: headerList }, workSheetName: 'Runtime', funcName: 'RunTimeStats' }
+    outputWritter.AddDataToAggregator(AggConf, data)
+    WriteDataFromAggregator(AggConf, 'RunTime')
+});

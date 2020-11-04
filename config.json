@@ -10,9 +10,10 @@
                 "getUsers",
                 "getSA",
                 "getAuditLogs",
-                "getPoliciesLogs",
-                "getComplianceLogs",
-                "getPolicyComplianceLogs"
+                "getPolicies",
+                "getCompliance",
+                "getPolicyCompliance",
+                "getAlerts"
             ],
             "tag": "demo1"
         }
@@ -39,7 +40,7 @@
             ]
         }
     ],
-    "CSCC": [
+    "GCP": [
         {
             "credentials": {
                 "GOOGLE_APPLICATION_CREDENTIALS": "/root/Mars/config/SA_File.json",
@@ -51,8 +52,7 @@
         }
     ],
     "output": {
-        "mode": "File",
-        "report":"XLSX",
-        "path": "/root/Mars/output"
+        "report": "XLSX",
+        "path": "/root/Mars/outputFolder"
     }
 }

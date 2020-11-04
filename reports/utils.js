@@ -15,6 +15,7 @@
    limitations under the License.
 
  */
+
 const TransformJson = (data, replacements, extras) => {
   let dataRemapped = []
   data.forEach(element => {
@@ -43,6 +44,15 @@ const TransformJson = (data, replacements, extras) => {
     dataRemapped.push(mergedObj)
   });
   return dataRemapped
+}
+const TransformObjToArr = (data, NewKey) => {
+  NewDataObj = []
+  Object.keys(data).map((key) => {
+    data[key].map((elemArr) => {
+      NewDataObj.push({ ...elemArr, [`${NewKey}`]: key })
+    })
+  })
+  return NewDataObj
 }
 
 const TranfsormJsonData = (data, Arrkeys) => {
@@ -89,4 +99,4 @@ const ReportBuilderConvert = (data, cardinal, ordinal) => {
 }
 
 
-module.exports = { TranfsormJsonData, TransformJson, ReportBuilder, ReportBuilderConvert }
+module.exports = { TranfsormJsonData, TransformObjToArr, TransformJson, ReportBuilder, ReportBuilderConvert }
