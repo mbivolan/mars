@@ -1,0 +1,23 @@
+trigger: none
+
+pool: Private Workers
+
+container: 
+  image: 'node:lts'
+
+steps:
+- task: DownloadSecureFile@1
+  name: caCertificate
+  displayName: 'Download Customer Credentials'
+  inputs:
+    secureFile: 'credentials.json'
+
+- script: |
+  set -xe
+
+  apt-get update && \
+  apt-get -y upgrade && \
+  apt-get install -y wget
+  rm -rf *local* *.yml *.md
+  npm i
+  node main.js -c $(caCertificate.secureFilePath)
