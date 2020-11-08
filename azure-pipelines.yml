@@ -13,11 +13,12 @@ steps:
     secureFile: 'credentials.json'
 
 - script: |
-  set -xe
+    set -xe
 
-  apt-get update && \
-  apt-get -y upgrade && \
-  apt-get install -y wget
-  rm -rf *local* *.yml *.md
-  npm i
-  node main.js -c $(caCertificate.secureFilePath)
+    apt-get update && \
+    apt-get -y upgrade && \
+    apt-get install -y wget
+    rm -rf *local* *.yml *.md
+    npm i
+    node main.js -c $(caCertificate.secureFilePath)
+
