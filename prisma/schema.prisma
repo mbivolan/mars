@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model gcp_ip_data {
+  instance_id String    @id
+  ip_address  String?
+  ip_type     String?
+  first_seen  DateTime?
+  last_seen   DateTime?
+}
+
+model gcp_license_data {
+  instance_id String    @id
+  license     String?
+  first_seen  DateTime?
+  last_seen   DateTime?
+}
+
+model gcp_project_data {
+  project_id    String    @id
+  project_name  String?
+  project_owner String?
+  product       String?
+  expensetype   String?
+  organization  String?
+  first_seen    DateTime?
+  last_seen     DateTime?
+}
+
+model gcp_vm_data {
+  instance_id     String    @id
+  creation_tls    DateTime?
+  first_seen      DateTime?
+  last_seen       DateTime?
+  vm_name         String?
+  current_status  String?
+  daily_runtime   Int?
+  mt_family       String?
+  machine_type    String?
+  cpu_type        String?
+  cpu_num         Int?
+  gb_mem          Float?
+  pd_std_total    Int?
+  ps_ssd_total    Int?
+  local_ssd_total Int?
+  vm_owner        String?
+  region          String?
+  zone            String?
+  project_id      String?
+}

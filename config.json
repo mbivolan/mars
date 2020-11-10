@@ -1,0 +1,60 @@
+{
+    "PrismaCloud": [
+        {
+            "credentials": {
+                "api": "https://api.prismacloud.io",
+                "ApiID": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                "ApiSecretKey": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "requests": [
+                "getUsers",
+                "getSA",
+                "getAuditLogs",
+                "getPolicies",
+                "getCompliance",
+                "getPolicyCompliance",
+                "getAlerts"
+            ],
+            "tag":"demo1"
+        }
+    ],
+    "Qualys": [
+        {
+            "credentials": {
+                "api": "https://qualysapi.qualys.com",
+                "username": "XXXXXXXXXX",
+                "password": "XXXXXXXXXX"
+            },
+            "requests": [
+                "get_assets"
+            ]
+        },
+        {
+            "credentials": {
+                "api": "https://qualysapi.qualys.com",
+                "username": "XXXXXXXXXX",
+                "password": "XXXXXXXXXX"
+            },
+            "requests": [
+                "get_assets"
+            ]
+        }
+    ],
+    "GCP": [
+        {
+            "credentials": {
+                "GOOGLE_APPLICATION_CREDENTIALS": "/root/Mars/config/SA_File.json",
+                "ORG_ID": "xxxxxxxxxxxx"
+            },
+            "requests": [
+                "get_assets"
+            ]
+        }
+    ],
+    "output": {
+        "report": "CSV",
+        "path": "/root/Mars/output/"
+    }
+}
+
+
