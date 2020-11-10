@@ -1,41 +1,33 @@
-
-/*
-     Copyright 2020 SJULTRA, inc.
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
- */
+BaseTypes = ['string', 'boolean', 'number',]
 
 const TransformJson = (data, replacements, extras) => {
   let dataRemapped = []
   data.forEach(element => {
     // Remove extra keys
     Object.keys(element).forEach((key) => Object.keys(replacements).includes(key) || delete element[key]);
+    // console.log("\n log1", "element: ", element, "\n")
     const object = {}
     Object.keys(element).map((key) => {
       const newKey = replacements[key] || key;
+      // console.log("\n log2", "key: ", key, "newkey: ", newKey, "object[newKey]: ", object[newKey], "element[key]: ", element[key], "\n")
       if (typeof newKey === "string") {
         object[newKey] = element[key];
         return
       } else {
         Object.keys(newKey).map((subkey) => {
+          // console.log("\n log3", "element[key]: ", element[key], "\n")
           if (Array.isArray(element[key])) {
             object[newKey[subkey]] = []
             element[key].forEach(subelement => {
               object[newKey[subkey]].push(subelement[subkey])
             });
-          } else {
+          } else if (BaseTypes.includes(typeof element[key][subkey])) {
+            // console.log("\n log4", newKey[subkey], "subkey: ", subkey, "element[key][subkey]: ", element[key][subkey], "\n")
             object[newKey[subkey]] = element[key][subkey];
+          } else {
+            // console.log("\n log5", newKey[subkey], "subkey: ", subkey, "element[key][subkey]: ", element[key][subkey], "\n")
+            const ParsedOutput=ParseObjDeep(element[key][subkey] ,newKey[subkey],Object.keys(newKey[subkey])[0])
+            object[ParsedOutput[1]]=ParsedOutput[0]
           }
         })
       }
@@ -54,6 +46,16 @@ const TransformObjToArr = (data, NewKey) => {
   })
   return NewDataObj
 }
+
+const ParseObjDeep=(data,keyvalues,key)=>{
+  if (BaseTypes.includes(typeof keyvalues[key])) {
+    console.log([data[key],keyvalues[key]])
+  return [data[key],keyvalues[key]]
+  }else{
+    ParseObjDeep(data[value[key]],value[key],key)
+  }
+}
+
 
 const TranfsormJsonData = (data, Arrkeys) => {
   for (const el of Arrkeys) {

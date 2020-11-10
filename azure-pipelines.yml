@@ -1,24 +1,67 @@
+parameters:
+- name: name
+  type: string
+
+variables:
+  INIT_SCRIPT_URL: "https://raw.githubusercontent.com/mbivolan/mctv2/master/utils/setup_env.sh"
+
 trigger: none
+jobs:
+- job: build
+  displayName: build
+  pool: 
+    vmImage: ubuntu-18.04
+  strategy:
+    matrix:
+      node_12_x:
+        node_version: 12.x
+  steps:
+    - task: AzureKeyVault@1
+      displayName: 'Azure Key Vault: MCT-Secrets'
+      inputs:
+        azureSubscription: AzureConnection
+        KeyVaultName: 'MCT-Secrets'
+        SecretsFilter: RTConfigFile,RTCredentialGCP
+    - task: Bash@3
+      displayName: 'Installing Generic tools'
+      inputs:
+        targetType: 'inline'
+        script: |
+          curl -sL $(INIT_SCRIPT_URL) | sudo bash
+    - task: NodeTool@0 
+      inputs:
+        versionSpec: $(node_version)
+    - task: Bash@3
+      displayName: 'Running the query'
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -x
+          pwd
+          ls
+          mkdir -p /tmp/results/
+          wget "$(RTConfigFile)" -O /tmp/config.json
 
-pool: Private Workers
+          wget "$(RTCredentialGCP)" -O /tmp/secrets.json
+          export GOOGLE_APPLICATION_CREDENTIALS="/tmp/secrets.json"
 
-container: 
-  image: 'node:lts'
-
-steps:
-- task: DownloadSecureFile@1
-  name: caCertificate
-  displayName: 'Download Customer Credentials'
-  inputs:
-    secureFile: 'credentials.json'
-
-- script: |
-    set -xe
-
-    apt-get update && \
-    apt-get -y upgrade && \
-    apt-get install -y wget
-    rm -rf *local* *.yml *.md
-    npm i
-    node main.js -c $(caCertificate.secureFilePath)
-
+          npm install
+          node main.js -c /tmp/config.json -o /tmp/results
+    - task: Bash@3
+      displayName: 'CSCC_0 logs'
+      inputs:
+        targetType: 'inline'
+        script: |
+          cat /tmp/results/CSCC_0.json
+    - task: Bash@3
+      displayName: 'Qualys_0 logs'
+      inputs:
+        targetType: 'inline'
+        script: |
+          cat /tmp/results/Qualys_0.json
+    - task: Bash@3
+      displayName: 'Qualys_1 logs'
+      inputs:
+        targetType: 'inline'
+        script: |
+          cat /tmp/results/Qualys_1.json

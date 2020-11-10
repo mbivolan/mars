@@ -1,19 +1,3 @@
-/*
-     Copyright 2020 SJULTRA, inc.
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
- */
 const { program } = require("commander");
 const fs = require("fs");
 const QualysApi = require("./Qualys");
@@ -44,17 +28,15 @@ const runtimeReportOBJ = []
 
 if (cfg.Qualys) {
     for (const [index, entry] of cfg.Qualys.entries()) {
-        const AggConf = InitAggregator(cfg)
-        QualysApi.init(entry.credentials, index, cfg, Stor, entry.requests, { AggConf, AddDataToAggregator, runtimeReportOBJ })
-        WriteDataFromAggregator(AggConf)
+        console.log("inits config")
+        QualysApi.init(entry.credentials, index, cfg, Stor, entry.requests, runtimeReportOBJ)
     }
 }
 
 if (cfg.GCP) {
     for (const [index, entry] of cfg.GCP.entries()) {
-        const AggConf = InitAggregator(cfg)
-        GCPApi.init(entry.credentials, index, cfg, Stor, entry.requests, { AggConf, AddDataToAggregator, runtimeReportOBJ })
-        WriteDataFromAggregator(AggConf)
+        console.log("inits config")
+        GCPApi.init(entry.credentials, index, cfg, Stor, entry.requests, runtimeReportOBJ)
     }
 }
 
@@ -64,7 +46,6 @@ if (cfg.PrismaCloud) {
         PrismaCloudApi.init(entry.credentials, index, cfg, Stor, entry.requests, runtimeReportOBJ)
     }
 }
-
 process.on('unhandledRejection', (reason) => {
     console.log('Reason: ' + reason);
 });
@@ -73,6 +54,8 @@ process.on('exit', () => {
     headerList = ['account id', 'name', 'apiURL', 'entries', 'reason']
     const AggConf = InitAggregator(cfg)
     data = { data: runtimeReportOBJ, header: { header: headerList }, workSheetName: 'Runtime', funcName: 'RunTimeStats' }
+    console.log("data:", data)
+
     outputWritter.AddDataToAggregator(AggConf, data)
     WriteDataFromAggregator(AggConf, 'RunTime')
 });

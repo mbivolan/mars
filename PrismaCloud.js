@@ -1,19 +1,3 @@
-/*
-     Copyright 2020 SJULTRA, inc.
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
- */
 const axios = require('axios');
 const { TranfsormJsonData, TransformObjToArr, TransformJson, ReportBuilder, ReportBuilderConvert } = require('./reports/utils');
 const { InitAggregator, AddDataToAggregator, WriteDataFromAggregator } = require('./reports/report');
@@ -76,19 +60,18 @@ const init = async (pcfg, cfgIndex, config, DataStore, funcList, stats) => {
 };
 
 const getUsers = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) => {
-    console.log('Getting PrismaCLoud information');
-    const api = pcfgapi + '/user';
-    const jwt = DataStore.get('x-redlock-auth');
-    const options = {
-        method: 'GET',
-        headers: {
-            'x-redlock-auth': jwt,
-            accept: '*/*',
-        },
-        url: api,
-    };
-    try {
-
+        console.log('Getting PrismaCLoud information');
+        const api = pcfgapi + '/user';
+        const jwt = DataStore.get('x-redlock-auth');
+        const options = {
+            method: 'GET',
+            headers: {
+                'x-redlock-auth': jwt,
+                accept: '*/*',
+            },
+            url: api,
+        };
+        try {
         const headerList = [
             'Instance',
             'Email',
@@ -103,7 +86,6 @@ const getUsers = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) => 
             'Role Type',
             'Display Name',
             'Access Keys Allowed'
-
         ]
         const replacements = {
             'email': 'Email',
@@ -122,12 +104,11 @@ const getUsers = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) => 
             'accessKeysAllowed': 'Access Keys Allowed'
         };
         const extras = { 'Instance': config.PrismaCloud[cfgIndex].tag }
-
         const response = await axios(options)
+        console.log('getUsers', JSON.stringify(response.data))
         const dataRemapped = TransformJson(response.data, replacements, extras)
         data = { data: dataRemapped, header: { header: headerList }, workSheetName: 'getUsers', funcName: 'getUsers' }
         outputWritter.AddDataToAggregator(outputWritter.AggConf, data)
-
         return { name: 'getUsers', apiURL: options.url, entries: response.data.length, reason: null }
     } catch (err) {
         console.log('error:', err)
@@ -136,18 +117,18 @@ const getUsers = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) => 
 };
 
 const getSA = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) => {
-    console.log('Getting PrismaCLoud SA Information');
-    const api = pcfgapi + '/access_keys';
-    const jwt = DataStore.get('x-redlock-auth');
-    const options = {
-        method: 'GET',
-        headers: {
-            'x-redlock-auth': jwt,
-            accept: '*/*',
-        },
-        url: api,
-    };
-    try {
+        console.log('Getting PrismaCLoud information');
+        const api = pcfgapi + '/access_keys';
+        const jwt = DataStore.get('x-redlock-auth');
+        const options = {
+            method: 'GET',
+            headers: {
+                'x-redlock-auth': jwt,
+                accept: '*/*',
+            },
+            url: api,
+        };
+        try {
         const headerList = [
             'Instance',
             'Name',
@@ -158,7 +139,6 @@ const getSA = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) => {
             'Expires On',
             'Role Name',
             'Role Type'
-
         ]
         const replacements = {
             'name': 'Name',
@@ -173,21 +153,20 @@ const getSA = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) => {
             'roleType': 'Role Type'
         };
         const extras = { 'Instance': config.PrismaCloud[cfgIndex].tag }
-
         const response = await axios(options)
+        console.log('getSA', JSON.stringify(response.data))
         const dataRemapped = TransformJson(response.data, replacements, extras)
         data = { data: dataRemapped, header: { header: headerList }, workSheetName: 'getSA', funcName: 'getSA' }
         outputWritter.AddDataToAggregator(outputWritter.AggConf, data)
-
         return { name: 'getSA', apiURL: options.url, entries: response.data.length, reason: null }
     } catch (err) {
         console.log('error:', err)
         return { name: 'getSA', apiURL: options.url, entries: 0, reason: JSON.stringify(err, null, 4) }
     }
 };
-
+//How we are authenticating 
 const getAuditLogs = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) => {
-    console.log('Getting PrismaCLoud Audit Log Information');
+    console.log('Getting PrismaCLoud information');
     const api = pcfgapi + '/audit/redlock';
     const jwt = DataStore.get('x-redlock-auth');
     const options = {
@@ -221,7 +200,6 @@ const getAuditLogs = async (pcfgapi, cfgIndex, config, DataStore, outputWritter)
 
         };
         const extras = { 'Instance': config.PrismaCloud[cfgIndex].tag }
-
         const response = await axios(options)
         console.log('getAuditLogs', JSON.stringify(response.data))
         const dataRemapped = TransformJson(response.data, replacements, extras)
@@ -274,7 +252,6 @@ const getPolicies = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) 
         }
         const extras = { 'Instance': config.PrismaCloud[cfgIndex].tag }
         const dataRemapped = TransformJson(response.data, replacements, extras)
-
         const dataRemappedCP = JSON.parse(JSON.stringify(dataRemapped));
         await getQueryForPolicy(pcfgapi, DataStore, dataRemapped, (data) => {
             TranfsormJsonData(data, KeysArrs)
@@ -288,7 +265,6 @@ const getPolicies = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) 
         data = { data: SummaryData, header: { header: headerListSummary }, workSheetName: 'labelSummaryGetPoliciesLogs', funcName: 'labelSummaryGetPoliciesLogs' }
         outputWritter.AddDataToAggregator(outputWritter.AggConf, data)
         return { name: 'getPolicies', apiURL: options.url, entries: dataRemapped.length, reason: null }
-
     } catch (err) {
         console.log('error:', err)
         return { name: 'getPolicies', apiURL: options.url, entries: 0, reason: JSON.stringify(err, null, 4) }
@@ -309,7 +285,6 @@ const getAlerts = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) =>
     };
     try {
         await axios(options).then((response) => {
-
             const headerList = ['Alert ID', 'Policy Name', 'Policy Type', 'Description', 'Policy Labels', 'Policy Severity', 'Resource Name', 'Cloud Type', 'Cloud Account Id', 'Cloud Account Name', 'Region', 'Recommendation', 'Alert Status', 'Alert Time', 'Event Occurred', 'Dismissed On', 'Dismissed By', 'Dismissal Reason', 'Resolved On', 'Resolution Reason', 'Resource ID']
             const KeysArrs = []
             const replacements = {
@@ -336,9 +311,7 @@ const getAlerts = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) =>
             //     TranfsormJsonData(data, KeysArrs)
             //     data = { data: data, header: { header: headerList }, workSheetName: 'getPolicies', funcName: 'getPolicies' }
             //     outputWritter.AddDataToAggregator(outputWritter.AggConf, data)
-
             // })
-
             // const headerListSummary = ['Labels', 'Policy Name']
             // reportData = ReportBuilder(dataRemappedCP, 'Labels', 'Policy Name')
             // SummaryData = ReportBuilderConvert(reportData, 'Labels', 'Policy Name')
@@ -354,19 +327,18 @@ const getAlerts = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) =>
 };
 
 const getCompliance = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) => {
-    console.log('Getting PrismaCLoud Compliance Information');
-    const api = pcfgapi + '/compliance';
-    const jwt = DataStore.get('x-redlock-auth');
-    const options = {
-        method: 'GET',
-        headers: {
-            'x-redlock-auth': jwt,
-            accept: 'application/json; charset=UTF-8',
-        },
-        url: api,
-    };
-    try {
-
+        console.log('Getting PrismaCLoud Compliance information');
+        const api = pcfgapi + '/compliance';
+        const jwt = DataStore.get('x-redlock-auth');
+        const options = {
+            method: 'GET',
+            headers: {
+                'x-redlock-auth': jwt,
+                accept: 'application/json; charset=UTF-8',
+            },
+            url: api,
+        };
+        try {
         const headerList = ['Instance', 'Name', 'Description', 'Cloud', 'Created By', 'Last Modified By', 'Last Modified On', 'Policies Assigned']
         const KeysArrs = ['Cloud']
         const replacements = {
@@ -379,7 +351,6 @@ const getCompliance = async (pcfgapi, cfgIndex, config, DataStore, outputWritter
             'name': 'Name'
         };
         const extras = { 'Instance': config.PrismaCloud[cfgIndex].tag }
-
         const response = await axios(options)
         console.log(response)
         const dataRemapped = TransformJson(response.data, replacements, extras)
@@ -394,7 +365,6 @@ const getCompliance = async (pcfgapi, cfgIndex, config, DataStore, outputWritter
 };
 
 const getPolicyCompliance = async (pcfgapi, cfgIndex, config, DataStore, outputWritter) => {
-    console.log('Getting PrismaCLoud Policy Compliance Information');
     const api = pcfgapi + '/policy/compliance';
     const jwt = DataStore.get('x-redlock-auth');
     const options = {
@@ -428,6 +398,7 @@ const getPolicyCompliance = async (pcfgapi, cfgIndex, config, DataStore, outputW
         };
         const extras = { 'Instance': config.PrismaCloud[cfgIndex].tag }
         const response = await axios(options)
+        console.log('getPolicyCompliance', JSON.stringify(response.data))
         dataArr = TransformObjToArr(response.data)
         const dataRemapped = TransformJson(dataArr, replacements, extras)
         data = { data: dataRemapped, header: { header: headerList }, workSheetName: 'getPolicyCompliance', funcName: 'getPolicyCompliance' }
@@ -441,8 +412,8 @@ const getPolicyCompliance = async (pcfgapi, cfgIndex, config, DataStore, outputW
 
 
 const getQueryForPolicy = async (pcfgapi, DataStore, data, callback) => {
-    console.log('Getting PrismaCLoud RQL Information');
     try {
+        console.log('Getting PrismaCLoud RQL Information');
         for (const element of data) {
             if (element.RQL && element.RQL.match(/.{8}-.{4}-.{4}-.{4}-.{12}/g)) {
                 const api = pcfgapi + `/search/history/${element.RQL}`;

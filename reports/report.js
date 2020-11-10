@@ -1,19 +1,3 @@
-/*
-     Copyright 2020 SJULTRA, inc.
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
- */
 const XLSX = require('xlsx');
 const fs = require('fs');
 const { parse } = require('json2csv');
@@ -24,7 +8,7 @@ const InitAggregator = (config) => {
   AggregatorConfig = {
     Type: config.output.report.toUpperCase(),
     outputPath: config.output.path,
-    workBook: null,
+    workBook:null,
     workSheetName: null
   }
   switch (config.output.report.toUpperCase()) {
@@ -56,9 +40,9 @@ const AddDataToAggregator = (AggregatorConfig, Data) => {
       break
     case SupportedTypes[1].toUpperCase():
       try {
-        const opts = { fields: [...Data.header.header] };
+        const opts = { fields:[...Data.header.header] };
         const csv = parse(Data.data, opts);
-        console.log("datopts", csv, "\n", "outp ", `${AggregatorConfig.outputPath}${Data.funcName}.csv`)
+        console.log("datopts",csv,"\n","outp ",`${AggregatorConfig.outputPath}${Data.funcName}.csv`)
         fs.appendFileSync(
           `${AggregatorConfig.outputPath}/${Data.funcName}.csv`,
           csv,
@@ -84,11 +68,11 @@ const AddDataToAggregator = (AggregatorConfig, Data) => {
   }
 }
 
-const WriteDataFromAggregator = (AggregatorConfig, PathMod) => {
+const WriteDataFromAggregator = (AggregatorConfig,PathMod) => {
   switch (AggregatorConfig.Type) {
     case SupportedTypes[0].toUpperCase():
       try {
-        XLSX.writeFile(AggregatorConfig.workBook, `${AggregatorConfig.outputPath}` + `Report_${new Date().toISOString().split('T')[0]}` + `${PathMod}` + ".XLSX");
+        XLSX.writeFile(AggregatorConfig.workBook, `${AggregatorConfig.outputPath}` + `Report_${new Date().toISOString().split('T')[0]}`+ `${PathMod}`+ ".XLSX");
       } catch (err) {
         console.log('error: ', err)
       }

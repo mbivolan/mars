@@ -15,7 +15,7 @@
                 "getPolicyCompliance",
                 "getAlerts"
             ],
-            "tag": "demo1"
+            "tag":"demo1"
         }
     ],
     "Qualys": [
@@ -52,7 +52,9 @@
         }
     ],
     "output": {
-        "report": "XLSX",
-        "path": "/root/Mars/outputFolder"
+        "report": "CSV",
+        "path": "/root/Mars/output/"
     }
 }
+
+
